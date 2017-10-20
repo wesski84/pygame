@@ -5,7 +5,7 @@ from scripts.globals import *
 from scripts.map_engine import *
 from scripts.NPC import *
 from scripts.player import *
-
+from scripts.meloonatic_gui import *
 
 pygame.init()
 
@@ -29,7 +29,7 @@ terrain = map_engine.load_map('maps/level1.map')
 
 clock = pygame.time.Clock()
 
-fps_font = pygame.font.Font("C:\\Windows\\Fonts\\Verdana.ttf",20)
+fps_font = pygame.font.Font("C:\\Windows\\Fonts\\Calibri.ttf",20)
 
 def show_fps():
     fps_overlay = fps_font.render(str(FPS), True, Color.Goldenrod)
@@ -100,38 +100,45 @@ while isRunning:
             elif event.key == pygame.K_d:
                 Globals.camera_move = 0
 
-    #LOGIC
-    if Globals.camera_move == 1:
-        if not Tiles.blocked_at((round(player_x), math.floor(player_y))):
-            Globals.camera_y += 300 * deltatime
-    elif Globals.camera_move == 2:
-        if not Tiles.blocked_at((round(player_x), math.ceil(player_y))):
-            Globals.camera_y -= 300 * deltatime
-    elif Globals.camera_move == 3:
-        if not Tiles.blocked_at((math.floor(player_x), round(player_y))):
-            Globals.camera_x += 300 * deltatime
-    elif Globals.camera_move == 4:
-        if not Tiles.blocked_at((math.ceil(player_x), round(player_y))):
-            Globals.camera_x -= 300 * deltatime
+    # Render Scene
+    if Globals.scene == "game":
 
-    player_x = (window_width / 2 - player_w / 2 - Globals.camera_x) / Tiles.Size
-    player_y = (window_height / 2 - player_h / 2 - Globals.camera_y) / Tiles.Size
+            if Globals.camera_move == 1:
+                #  LOGIC
+                if not Tiles.blocked_at((round(player_x), math.floor(player_y))):
+                    Globals.camera_y += 300 * deltatime
+            elif Globals.camera_move == 2:
+                if not Tiles.blocked_at((round(player_x), math.ceil(player_y))):
+                    Globals.camera_y -= 300 * deltatime
+            elif Globals.camera_move == 3:
+                if not Tiles.blocked_at((math.floor(player_x), round(player_y))):
+                    Globals.camera_x += 300 * deltatime
+            elif Globals.camera_move == 4:
+                if not Tiles.blocked_at((math.ceil(player_x), round(player_y))):
+                    Globals.camera_x -= 300 * deltatime
 
-    # RENDER GRAPHICS
-    # window.fill(Color.Black)
-    window.blit(Sky,(0,0))
+            player_x = (window_width / 2 - player_w / 2 - Globals.camera_x) / Tiles.Size
+            player_y = (window_height / 2 - player_h / 2 - Globals.camera_y) / Tiles.Size
 
-    window.blit(terrain,(Globals.camera_x, Globals.camera_y))
-    player.render(window, (window_width / 2 - player_w / 2, window_height / 2 - player_h / 2))
+            # RENDER GRAPHICS
+            # window.fill(Color.Black)
+            window.blit(Sky,(0,0))
+
+            window.blit(terrain,(Globals.camera_x, Globals.camera_y))
+            player.render(window, (window_width / 2 - player_w / 2, window_height / 2 - player_h / 2))
+
+    # Process Menu
+    elif Globals.scene == "menu":
+        window.fill(Color.Fog)
+
 
     show_fps()
-
 
     pygame.display.update()
 
     count_fps()
 
-    # clock.tick(30)
+
 
 
 pygame.quit()

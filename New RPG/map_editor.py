@@ -11,7 +11,7 @@ pygame.display.set_caption("Map Editor")
 clock = pygame.time.Clock()
 
 
-txt_font = pygame.font.Font("C:\\Windows\\Fonts\\Verdana.ttf",20)
+txt_font = pygame.font.Font("C:\\Windows\\Fonts\\Calibri.ttf",20)
 
 
 def cycle_brushes(brush):
@@ -29,20 +29,37 @@ def cycle_brushes(brush):
 
 def show_brush():
     display_brush = ""
+    pic = ""
+
+    brushR = pygame.image.load('graphics/eraser.png')
+    brush1 = pygame.image.load('graphics/grass.png')
+    brush2 = pygame.image.load('graphics/stone.png')
+    brush3 = pygame.image.load('graphics/water.png')
+    brush4 = pygame.image.load('graphics/bush.png')
+
+
 
     if brush == 'r':
         display_brush = 'Eraser'
+        pic = brushR
     elif brush == '1':
         display_brush = 'Grass'
+        pic = brush1
     elif brush == '2':
         display_brush = 'Stone'
+        pic = brush2
     elif brush == '3':
         display_brush = 'Water'
+        pic = brush3
     elif brush == '4':
         display_brush = 'Bush'
+        pic = brush4
+
 
     currentBrush = txt_font.render(str(display_brush), True, Color.White)
     window.blit(currentBrush, (0,0))
+    window.fill(Color.LightGray, rect=[0, 20, 36, 36])
+    window.blit(pic,(2, 22))
 
 def export_map(file):
     map_data = ""
