@@ -18,7 +18,7 @@ def cycle_brushes(brush):
 
     global newbrush
 
-    possible_brushes = ["1","2","3","4"]
+    possible_brushes = ["1", "2", "3", "4", "5", "6"]
 
     if brush == "r" or brush == possible_brushes[-1]:
         newbrush = "1"
@@ -26,6 +26,7 @@ def cycle_brushes(brush):
         newbrush = str(int(brush) + 1)
 
     return newbrush
+
 
 def show_brush():
     display_brush = ""
@@ -36,8 +37,8 @@ def show_brush():
     brush2 = pygame.image.load('graphics/stone.png')
     brush3 = pygame.image.load('graphics/water.png')
     brush4 = pygame.image.load('graphics/bush.png')
-
-
+    brush5 = pygame.image.load('graphics/floor1.png')
+    brush6 = pygame.image.load('graphics/plant1.png')
 
     if brush == 'r':
         display_brush = 'Eraser'
@@ -54,12 +55,18 @@ def show_brush():
     elif brush == '4':
         display_brush = 'Bush'
         pic = brush4
-
+    elif brush == '5':
+        display_brush = 'Floor1'
+        pic = brush5
+    elif brush == '6':
+        display_brush = 'Plant1'
+        pic = brush6
 
     currentBrush = txt_font.render(str(display_brush), True, Color.White)
-    window.blit(currentBrush, (0,0))
+    window.blit(currentBrush, (0, 0))
     window.fill(Color.LightGray, rect=[0, 20, 36, 36])
-    window.blit(pic,(2, 22))
+    window.blit(pic, (2, 22))
+
 
 def export_map(file):
     map_data = ""
@@ -93,7 +100,6 @@ def load_map(file):
     with open(file, "r") as mapfile:
         map_data = mapfile.read()
 
-
     map_data = map_data.split("-")
     map_size = map_data[len(map_data) -1]
     map_data.remove(map_size)
@@ -118,13 +124,12 @@ def load_map(file):
     tile_data = tiles
 
 
-
 mouse_pos = 0
 mouse_x = 0
 mouse_y = 0
 
-map_width = 100 * Tiles.Size
-map_height = 100 * Tiles.Size
+map_width = 14 * Tiles.Size
+map_height = 10 * Tiles.Size
 
 selector = pygame.Surface((Tiles.Size, Tiles.Size), pygame.HWSURFACE|pygame.SRCALPHA)
 selector.fill(Color.WithAlpha(100, Color.CornflowerBlue))
@@ -142,13 +147,14 @@ brush = "1"
 
 for x in range(0, map_width, Tiles.Size):
     for y in range(0, map_height, Tiles.Size):
-        tile_data.append([x,y,"1"])
+        tile_data.append([x, y, "1"])
 
 
 isRunning = True
 
 while isRunning:
     for event in pygame.event.get():
+        # print(event)
         if event.type == pygame.QUIT:
             isRunning = False
 
@@ -175,22 +181,25 @@ while isRunning:
                 brush = "2"
             elif event.key == pygame.K_3:
                 brush = "3"
-            elif event.key == pygame.K_4        :
+            elif event.key == pygame.K_4:
                 brush = "4"
+            elif event.key == pygame.K_5:
+                brush = "5"
+            elif event.key == pygame.K_6:
+                brush = "6"
             elif event.key == pygame.K_TAB:
                 cycle_brushes(brush)
                 brush = newbrush
         # SAVE MAP
-            if event.key == pygame.K_F11:
+            if event.key == pygame.K_p:
                 name = input("Map Name: ")
                 export_map(name + ".map")
                 print("Map Saved Successfully")
         # LOAD MAP
-            elif event.key == pygame.K_F10:
+            elif event.key == pygame.K_l:
                 name = input("Map Name: ")
                 load_map(name + ".map")
                 print("Map Loaded Successfully")
-
 
         elif event.type == pygame.KEYUP:
             camera_move = 0
@@ -201,28 +210,43 @@ while isRunning:
             mouse_y = math.floor(mouse_pos[1] / Tiles.Size) * Tiles.Size
 
         if event.type == pygame.MOUSEBUTTONDOWN:
-            tile = [mouse_x - camera_x, mouse_y - camera_y, brush]  # Keep as list, not a tuple
-
-            found = False
-
-            for t in tile_data:
-                if t[0] == tile[0] and t[1] == tile[1]:
-                    found = True
-                    break
-
-            if not found:
-                if not brush == "r":
-                    tile_data.append(tile)
+            if event.button == 4:
+                camera_y = camera_y + Tiles.Size
+            elif event.button == 5:
+                camera_y = camera_y - Tiles.Size
             else:
-                if brush == "r":
-                    #Remove Tile
-                    for t in tile_data:
-                        if t[0] == tile[0] and t[1] == tile[1]:
-                            tile_data.remove(t)
-                            print("Tile Removed.")
+                tile = [mouse_x - camera_x, mouse_y - camera_y, brush]  # Keep as list, not a tuple
+
+                found = False
+
+                for t in tile_data:
+                    if t[0] == tile[0] and t[1] == tile[1]:
+                        found = True
+                        break
+
+                if not found:
+                    if not brush == "r":
+                        tile_data.append(tile)
                 else:
-                    print("A tile is already placed here!")
-    #LOGIC
+                    if brush == "r":
+                        # Remove Tile
+                        for t in tile_data:
+                            if t[0] == tile[0] and t[1] == tile[1]:
+                                tile_data.remove(t)
+                                print("Tile Removed.")
+                    else:
+                        # Remove Tile for not transparent tiles
+                        if brush != '6':
+                            for t in tile_data:
+                                if t[0] == tile[0] and t[1] == tile[1]:
+                                    tile_data.remove(t)
+                                    # print("Tile Removed.")
+                            tile_data.append(tile)
+                            print("A tile has been replaced")
+                        else:
+                            tile_data.append(tile)
+                            print("A transparent tile has been overlaid")
+    # LOGIC
     if camera_move == 1:
         camera_y += Tiles.Size
     elif camera_move == 2:
@@ -232,16 +256,11 @@ while isRunning:
     elif camera_move == 4:
         camera_x -= Tiles.Size
 
-
-
     window.fill(Color.Blue)
 
-    #Draw Map
+    # Draw Map
     for tile in tile_data:
-        try:
-            window.blit(Tiles.texture_tags[tile[2]], (tile[0]+ camera_x, tile[1]+ camera_y))
-        except:
-            pass
+        window.blit(Tiles.texture_tags[tile[2]], (tile[0] + camera_x, tile[1] + camera_y))
 
 
 # Draw Tile Highlighter (Selector)

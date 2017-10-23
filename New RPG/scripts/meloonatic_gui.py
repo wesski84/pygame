@@ -32,7 +32,7 @@ class Font:
 
         
 
-class Menu:  
+class Menu:
 
     class Button:
 
@@ -128,18 +128,3 @@ class Menu:
 
         def Render(self, to, pos = (0, 0)):
             to.blit(self.Bitmap, (self.Left + pos[0], self.Top + pos[1]))
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-            

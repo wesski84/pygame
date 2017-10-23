@@ -14,7 +14,7 @@ icon = pygame.image.load('images/wizard_icon.png')
 sky = pygame.image.load('graphics/sky.png')
 Sky = pygame.Surface(sky.get_size(),pygame.HWSURFACE)
 
-Sky.blit(sky,(0,0))
+Sky.blit(sky, (0, 0))
 
 del sky
 
@@ -29,7 +29,8 @@ terrain = map_engine.load_map('maps/level1.map')
 
 clock = pygame.time.Clock()
 
-fps_font = pygame.font.Font("C:\\Windows\\Fonts\\Calibri.ttf",20)
+fps_font = pygame.font.Font("C:\\Windows\\Fonts\\Calibri.ttf", 20)
+
 
 def show_fps():
     fps_overlay = fps_font.render(str(FPS), True, Color.Goldenrod)
@@ -122,15 +123,39 @@ while isRunning:
 
             # RENDER GRAPHICS
             # window.fill(Color.Black)
-            window.blit(Sky,(0,0))
+            window.blit(Sky, (0, 0))
 
-            window.blit(terrain,(Globals.camera_x, Globals.camera_y))
+            window.blit(terrain, (Globals.camera_x, Globals.camera_y))
             player.render(window, (window_width / 2 - player_w / 2, window_height / 2 - player_h / 2))
 
     # Process Menu
     elif Globals.scene == "menu":
         window.fill(Color.Fog)
 
+    elif Globals.scene == 'house1':
+        terrain = map_engine.load_map('maps/house1.map')
+        if Globals.camera_move == 1:
+            #  LOGIC
+            if not Tiles.blocked_at((round(player_x), math.floor(player_y))):
+                Globals.camera_y += 300 * deltatime
+        elif Globals.camera_move == 2:
+            if not Tiles.blocked_at((round(player_x), math.ceil(player_y))):
+                Globals.camera_y -= 300 * deltatime
+        elif Globals.camera_move == 3:
+            if not Tiles.blocked_at((math.floor(player_x), round(player_y))):
+                Globals.camera_x += 300 * deltatime
+        elif Globals.camera_move == 4:
+            if not Tiles.blocked_at((math.ceil(player_x), round(player_y))):
+                Globals.camera_x -= 300 * deltatime
+
+        player_x = (window_width / 2 - player_w / 2 - Globals.camera_x) / Tiles.Size
+        player_y = (window_height / 2 - player_h / 2 - Globals.camera_y) / Tiles.Size
+
+        # RENDER GRAPHICS
+        # window.fill(Color.Black)
+        window.blit(Sky, (0, 0))
+        window.blit(terrain, (Globals.camera_x, Globals.camera_y))
+        player.render(window, (window_width / 2 - player_w / 2, window_height / 2 - player_h / 2))
 
     show_fps()
 
@@ -139,8 +164,6 @@ while isRunning:
     count_fps()
 
 
-
-
 pygame.quit()
+
 sys.exit()
-            
