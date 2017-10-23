@@ -198,7 +198,7 @@ while isRunning:
         # LOAD MAP
             elif event.key == pygame.K_l:
                 name = input("Map Name: ")
-                load_map(name + ".map")
+                load_map('maps/' + name + ".map")
                 print("Map Loaded Successfully")
 
         elif event.type == pygame.KEYUP:

@@ -38,7 +38,7 @@ class Menu:
 
         All = []
 
-        def __init__(self, text, rect, bg, fg, bgr, font = Font.Default, tag = ("menu", None)):
+        def __init__(self, text, rect, bg, fg, bgr = Color.CornflowerBlue, font = Font.Default, tag = ("menu", None)):
             self.Text = text
             self.Left = rect[0]
             self.Top = rect[1]
